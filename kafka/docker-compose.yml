@@ -19,4 +19,4 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
 
     volumes:
-      - c:/Users/dan/Desktop/tg_mpl_photo/kafka/volumes:/bitnami/kafka
+      - ./volumes:/bitnami/kafka
