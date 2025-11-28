@@ -1,0 +1,13 @@
+kafka:
+  local:
+    brokers:
+      - "localhost:9092"
+    topic: "test-topic"
+    group_id: "test-consumer-group"
+  production:
+    brokers:
+      - "kafka-prod:9092"
+    topic: "prod-topic"
+    group_id: "prod-consumer-group"
+
+env: "local"
