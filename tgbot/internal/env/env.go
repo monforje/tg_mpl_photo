@@ -3,6 +3,8 @@ package env
 import (
 	"os"
 	"tgbot/pkg/errorx"
+
+	"github.com/joho/godotenv"
 )
 
 type Env struct {
@@ -11,7 +13,10 @@ type Env struct {
 }
 
 func New() (*Env, error) {
-	// godotenv.Load()
+	err := godotenv.Load(".env")
+	if err != nil {
+		return nil, err
+	}
 
 	t := os.Getenv("TG_TOKEN")
 	if t == "" {
