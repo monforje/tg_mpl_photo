@@ -1,6 +1,10 @@
 package bot
 
-import tele "gopkg.in/telebot.v4"
+import (
+	"tgbot/pkg/logx"
+
+	tele "gopkg.in/telebot.v4"
+)
 
 type Bot struct {
 	b *tele.Bot
@@ -16,13 +20,19 @@ func New(token string) (*Bot, error) {
 		return nil, err
 	}
 
-	return &Bot{b: b}, nil
+	logx.Info("bot initialized successfully")
+
+	return &Bot{
+		b: b,
+	}, nil
 }
 
 func (b *Bot) Run() {
+	logx.Info("bot is starting")
 	b.b.Start()
 }
 
 func (b *Bot) Stop() {
 	b.b.Stop()
+	logx.Info("bot has stopped")
 }

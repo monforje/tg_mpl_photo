@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 	"tgbot/internal/app"
+	"tgbot/pkg/logx"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 
 	a, err := app.New(ctx)
 	if err != nil {
-		panic(err)
+		logx.Fatal("app initialization error", "error", err)
 	}
 
 	sigChan := make(chan os.Signal, 1)

@@ -3,6 +3,7 @@ package env
 import (
 	"os"
 	"tgbot/pkg/errorx"
+	"tgbot/pkg/logx"
 
 	"github.com/joho/godotenv"
 )
@@ -27,6 +28,8 @@ func New() (*Env, error) {
 	if dsn == "" {
 		return nil, errorx.ErrPostgresDSNEmpty
 	}
+
+	logx.Info("env loaded successfully")
 
 	return &Env{
 		TgToken:     t,
