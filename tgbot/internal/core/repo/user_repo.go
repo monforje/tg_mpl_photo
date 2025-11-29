@@ -13,6 +13,6 @@ type UserRepo interface {
 		tgID int64,
 		username string,
 		createdAt time.Time,
-	) (int64, error)
+	) error
 	GetUserByTgID(tgID int64) (*model.User, error)
 }

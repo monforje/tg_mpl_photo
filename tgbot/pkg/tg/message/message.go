@@ -4,4 +4,5 @@ package message
 var (
 	MsgRegSuccess = "You have successfully registered!"
 	MsgRegFail    = "Registration failed. Please try again."
+	MsgRegAlready = "You are already registered."
 )

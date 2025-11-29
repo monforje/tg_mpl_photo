@@ -2,6 +2,9 @@ package service
 
 import (
 	"tgbot/internal/core/repo"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type RegService struct {
@@ -17,7 +20,13 @@ func NewRegService(userRepo repo.UserRepo) *RegService {
 func (r *RegService) Reg(
 	tgID int64,
 	username string,
-) (int64, error) {
-	// TODO: implement
-	return 0, nil
+) error {
+	id := uuid.New()
+	timeNow := time.Now()
+
+	if err := r.userRepo.CreateUser(id, tgID, username, timeNow); err != nil {
+		return err
+	}
+
+	return nil
 }

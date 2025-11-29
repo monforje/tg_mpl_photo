@@ -25,5 +25,5 @@ func New(
 }
 
 func (r *Router) Setup() {
-	r.bot.Handle("/reg", r.regHandler.HandleReg)
+	r.bot.Handle("/start", r.regHandler.HandleReg)
 }

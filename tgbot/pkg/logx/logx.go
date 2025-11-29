@@ -20,6 +20,10 @@ func Info(msg string, args ...any) {
 	logger.Info(msg, args...)
 }
 
+func Error(msg string, args ...any) {
+	logger.Error(msg, args...)
+}
+
 func Fatal(msg string, args ...any) {
 	logger.Error(msg, args...)
 	os.Exit(1)
