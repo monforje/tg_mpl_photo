@@ -3,12 +3,14 @@ package app
 import (
 	"context"
 	"tgbot/internal/env"
+	"tgbot/internal/psql"
 	"tgbot/internal/tg/bot"
 	"tgbot/pkg/logx"
 )
 
 type App struct {
-	b *bot.Bot
+	b  *bot.Bot
+	db *psql.Psql
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -17,7 +19,12 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	b, err := bot.New(e.TgToken)
+	db, err := psql.New(ctx, e.PostgresDSN)
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := bot.New(e.TgToken, db.Pool)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +32,8 @@ func New(ctx context.Context) (*App, error) {
 	logx.Info("app initialized successfully")
 
 	return &App{
-		b: b,
+		b:  b,
+		db: db,
 	}, nil
 }
 
@@ -46,4 +54,5 @@ func (a *App) Run(ctx context.Context) {
 
 func (a *App) Stop() {
 	a.b.Stop()
+	a.db.Stop()
 }
