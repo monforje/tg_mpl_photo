@@ -7,17 +7,20 @@ import (
 )
 
 type Router struct {
-	bot        *tele.Bot
-	regHandler *handler.RegHandler
+	bot          *tele.Bot
+	regHandler   *handler.RegHandler
+	photoHandler *handler.PhotoHandler
 }
 
 func New(
 	bot *tele.Bot,
 	regHandler *handler.RegHandler,
+	photoHandler *handler.PhotoHandler,
 ) *Router {
 	r := &Router{
-		bot:        bot,
-		regHandler: regHandler,
+		bot:          bot,
+		regHandler:   regHandler,
+		photoHandler: photoHandler,
 	}
 	r.Setup()
 
@@ -26,4 +29,5 @@ func New(
 
 func (r *Router) Setup() {
 	r.bot.Handle("/start", r.regHandler.HandleReg)
+	// r.photoHandler.HandleUpload
 }
