@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"tgbot/internal/psql/repoimpl"
+	"tgbot/internal/postgres/repoimpl"
 	"tgbot/internal/service"
 	"tgbot/internal/tg/handler"
 	"tgbot/internal/tg/router"

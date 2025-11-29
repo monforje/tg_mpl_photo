@@ -1,4 +1,4 @@
-package psql
+package postgres
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Psql struct {
+type Postgres struct {
 	Pool *pgxpool.Pool
 }
 
-func New(ctx context.Context, dsn string) (*Psql, error) {
+func New(ctx context.Context, dsn string) (*Postgres, error) {
 	logx.Info("connecting to postgres")
 
 	pool, err := pgxpool.New(ctx, dsn)
@@ -26,12 +26,12 @@ func New(ctx context.Context, dsn string) (*Psql, error) {
 
 	logx.Info("postgres connection established")
 
-	return &Psql{
+	return &Postgres{
 		Pool: pool,
 	}, nil
 }
 
-func (p *Psql) Stop() {
+func (p *Postgres) Stop() {
 	p.Pool.Close()
 	logx.Info("postgres connection closed")
 }

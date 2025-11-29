@@ -3,14 +3,14 @@ package app
 import (
 	"context"
 	"tgbot/internal/env"
-	"tgbot/internal/psql"
+	"tgbot/internal/postgres"
 	"tgbot/internal/tg/bot"
 	"tgbot/pkg/logx"
 )
 
 type App struct {
 	b  *bot.Bot
-	db *psql.Psql
+	db *postgres.Postgres
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -19,7 +19,7 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	db, err := psql.New(ctx, e.PostgresDSN)
+	db, err := postgres.New(ctx, e.PostgresDSN)
 	if err != nil {
 		return nil, err
 	}
