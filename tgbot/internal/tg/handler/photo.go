@@ -32,17 +32,6 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 	username := c.Sender().Username
 	photo := c.Message().Photo
 
-	if _, err := c.Bot().File(&photo.File); err != nil {
-		logx.Error(
-			"photo upload failed",
-			"error", err,
-			"username", username,
-			"tg_id", userID,
-			"unique_id", photo.UniqueID,
-		)
-		return c.Send(message.MsgPhotoUploadFail)
-	}
-
 	err := p.photoService.UploadPhoto(
 		userID,
 		photo.FileID,

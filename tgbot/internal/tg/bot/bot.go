@@ -27,7 +27,7 @@ func New(
 		return nil, err
 	}
 
-	router.New(
+	router.Setup(
 		b,
 		userHandler,
 		photoHandler,

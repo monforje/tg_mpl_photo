@@ -63,7 +63,6 @@ func (p *PhotoRepoImpl) CreatePhoto(
 }
 
 func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
-
 	query := `
         SELECT 
             id, user_id, file_id, unique_id, file_url, created_at, updated_at
