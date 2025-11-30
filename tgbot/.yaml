@@ -1,2 +1,9 @@
-// brokers
-// kafka producer topic
+kafka:
+  brokers:
+    - "localhost:9092"
+  producer:
+    topic: "raw_photo_topic"
+    timeout: 10s
+    retry:
+      max: 3
+      backoff: 100ms

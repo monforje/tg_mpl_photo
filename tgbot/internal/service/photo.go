@@ -3,6 +3,7 @@ package service
 import (
 	"tgbot/internal/core/event"
 	"tgbot/internal/core/repo"
+	"tgbot/pkg/logx"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,9 +53,23 @@ func (p *PhotoService) UploadPhoto(
 		return err
 	}
 
-	// create event
+	photoEvent := &event.PhotoUploadEvent{
+		ID:        id,
+		UserID:    user.ID,
+		FileID:    fileID,
+		UniqueID:  uniqueID,
+		FileURL:   fileURL,
+		CreatedAt: timeNow,
+	}
 
-	// produce event
+	if err := p.photoProducer.Produce(photoEvent); err != nil {
+		logx.Error(
+			"failed to produce photo upload event",
+			"error", err,
+			"photo_id", id,
+			"user_id", user.ID,
+		)
+	}
 
 	return nil
 }

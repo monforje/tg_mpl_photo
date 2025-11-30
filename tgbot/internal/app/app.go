@@ -2,7 +2,9 @@ package app
 
 import (
 	"context"
+	"tgbot/internal/config"
 	"tgbot/internal/env"
+	"tgbot/internal/kafka"
 	"tgbot/internal/kafka/producer"
 	"tgbot/internal/postgres"
 	"tgbot/internal/postgres/repoimpl"
@@ -13,8 +15,9 @@ import (
 )
 
 type App struct {
-	b  *bot.Bot
-	db *postgres.Postgres
+	b     *bot.Bot
+	db    *postgres.Postgres
+	kafka *kafka.Kafka
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -23,26 +26,27 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	// cfg, err := config.New()
-	// if err != nil {
-	// 	return nil, err
-	// }
+	cfg, err := config.New()
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := postgres.New(ctx, e.PostgresDSN)
 	if err != nil {
 		return nil, err
 	}
 
-	// kafka
-	// kafka.New() mb
-	photoProducer := producer.NewPhotoUploadEventProducer()
+	k, err := kafka.New(&cfg.Kafka)
+	if err != nil {
+		return nil, err
+	}
 
-	// user
+	photoProducer := producer.NewPhotoUploadEventProducer(k)
+
 	userRepo := repoimpl.NewUserRepoImpl(db.Pool)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	// photo
 	photoRepo := repoimpl.NewPhotoRepoImpl(db.Pool)
 	photoService := service.NewPhotoService(
 		photoRepo,
@@ -66,8 +70,9 @@ func New(ctx context.Context) (*App, error) {
 	logx.Info("app initialized successfully")
 
 	return &App{
-		b:  b,
-		db: db,
+		b:     b,
+		db:    db,
+		kafka: k,
 	}, nil
 }
 
@@ -81,12 +86,18 @@ func (a *App) Run(ctx context.Context) {
 	}()
 
 	<-ctx.Done()
-	a.Stop()
+	if err := a.Stop(); err != nil {
+		logx.Error("failed to stop app", "error", err)
+	}
 	<-done
 	logx.Info("app has stopped")
 }
 
-func (a *App) Stop() {
+func (a *App) Stop() error {
 	a.b.Stop()
+	if err := a.kafka.Stop(); err != nil {
+		return err
+	}
 	a.db.Stop()
+	return nil
 }
