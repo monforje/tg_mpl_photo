@@ -12,11 +12,17 @@ import (
 
 type PhotoHandler struct {
 	photoService *service.PhotoService
+	token        string
 }
 
-func NewPhotoHandler(photoService *service.PhotoService) *PhotoHandler {
+func NewPhotoHandler(
+	photoService *service.PhotoService,
+	token string,
+) *PhotoHandler {
+
 	return &PhotoHandler{
 		photoService: photoService,
+		token:        token,
 	}
 }
 
@@ -35,12 +41,11 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		)
 		return c.Send(message.MsgPhotoUploadFail)
 	}
-
 	err := p.photoService.UploadPhoto(
 		userID,
 		photo.FileID,
 		photo.UniqueID,
-		photo.FileURL,
+		getURL(p.token, photo.FilePath),
 	)
 
 	if err == errorx.ErrPhotoDuplicate {
@@ -74,4 +79,8 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 	)
 	sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 	return c.Send(message.MsgPhotoUploadSuccess)
+}
+
+func getURL(token string, filePath string) string {
+	return "https://api.telegram.org/file/bot" + token + "/" + filePath
 }
