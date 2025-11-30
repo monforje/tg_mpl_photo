@@ -23,12 +23,18 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
+	// cfg, err := config.New()
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	db, err := postgres.New(ctx, e.PostgresDSN)
 	if err != nil {
 		return nil, err
 	}
 
 	// kafka
+	// kafka.New() mb
 	photoProducer := producer.NewPhotoUploadEventProducer()
 
 	// user
