@@ -3,6 +3,7 @@ package repoimpl
 import (
 	"context"
 	"errors"
+	"fmt"
 	"tgbot/internal/core/model"
 	"tgbot/pkg/errorx"
 	"time"
@@ -60,7 +61,7 @@ func (p *PhotoRepoImpl) CreatePhoto(
 		if errors.Is(err, pgx.ErrNoRows) {
 			return errorx.ErrPhotoDuplicate
 		}
-		return err
+		return fmt.Errorf("failed to create photo: %w", err)
 	}
 
 	return nil
@@ -92,7 +93,7 @@ func (p *PhotoRepoImpl) GetPhotoByFileID(ctx context.Context, fileID string) (*m
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errorx.ErrPhotoNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("failed to get photo: %w", err)
 	}
 
 	return &photo, nil

@@ -3,16 +3,13 @@ package producer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"tgbot/internal/core/event"
 	"tgbot/internal/kafka"
 	"tgbot/pkg/logx"
 	"time"
 
 	"github.com/IBM/sarama"
-)
-
-const (
-	defaultProduceTimeout = 10 * time.Second
 )
 
 type PhotoProducer struct {
@@ -26,16 +23,16 @@ func NewPhotoProducer(kafka *kafka.Kafka) *PhotoProducer {
 }
 
 func (p *PhotoProducer) Produce(ctx context.Context, event *event.PhotoUploadEvent) error {
-	ctx, cancel := context.WithTimeout(ctx, defaultProduceTimeout)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	if err := event.Validate(); err != nil {
-		return err
+		return fmt.Errorf("invalid photo upload event: %w", err)
 	}
 
 	data, err := json.Marshal(event)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal photo upload event: %w", err)
 	}
 
 	msg := &sarama.ProducerMessage{
@@ -48,7 +45,7 @@ func (p *PhotoProducer) Produce(ctx context.Context, event *event.PhotoUploadEve
 	go func() {
 		partition, offset, err := p.kafka.Producer().SendMessage(msg)
 		if err != nil {
-			resultChan <- err
+			resultChan <- fmt.Errorf("failed to send photo upload event message: %w", err)
 			return
 		}
 
@@ -64,8 +61,8 @@ func (p *PhotoProducer) Produce(ctx context.Context, event *event.PhotoUploadEve
 
 	select {
 	case err := <-resultChan:
-		return err
+		return fmt.Errorf("photo upload event produce failed: %w", err)
 	case <-ctx.Done():
-		return ctx.Err()
+		return fmt.Errorf("photo upload event produce context done: %w", ctx.Err())
 	}
 }

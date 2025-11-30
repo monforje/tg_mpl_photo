@@ -1,6 +1,7 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"tgbot/pkg/errorx"
 	"tgbot/pkg/logx"
@@ -16,7 +17,7 @@ type Env struct {
 func New() (*Env, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to load .env file: %w", err)
 	}
 
 	t := os.Getenv("TG_TOKEN")

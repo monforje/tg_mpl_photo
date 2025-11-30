@@ -3,6 +3,7 @@ package repoimpl
 import (
 	"context"
 	"errors"
+	"fmt"
 	"tgbot/internal/core/model"
 	"tgbot/pkg/errorx"
 	"time"
@@ -53,7 +54,7 @@ func (u *UserRepoImpl) CreateUser(
 		if errors.Is(err, pgx.ErrNoRows) {
 			return errorx.ErrAlreadyRegistered
 		}
-		return err
+		return fmt.Errorf("failed to create user: %w", err)
 	}
 
 	return nil
@@ -78,7 +79,7 @@ func (u *UserRepoImpl) GetUserByTgID(ctx context.Context, tgID int64) (*model.Us
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errorx.ErrUserNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	return &user, nil

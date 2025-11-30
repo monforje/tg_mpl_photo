@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"fmt"
 	"tgbot/pkg/config"
 	"tgbot/pkg/logx"
 	"time"
@@ -31,7 +32,7 @@ func New(cfg *config.KafkaConfig) (*Kafka, error) {
 
 	producer, err := sarama.NewSyncProducer(cfg.Brokers, saramaConfig)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create kafka producer: %w", err)
 	}
 
 	logx.Info("kafka producer initialized successfully")
@@ -54,7 +55,7 @@ func (k *Kafka) Stop() error {
 	time.Sleep(100 * time.Millisecond)
 
 	if err := k.producer.Close(); err != nil {
-		return err
+		return fmt.Errorf("failed to close kafka producer: %w", err)
 	}
 
 	logx.Info("kafka producer closed successfully")
