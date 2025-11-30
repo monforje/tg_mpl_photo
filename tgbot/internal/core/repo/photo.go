@@ -10,7 +10,12 @@ import (
 type PhotoRepo interface {
 	CreatePhoto(
 		id uuid.UUID,
+		userID int64,
+		fileID string,
+		uniqueID string,
+		fileURL string,
 		createdAt time.Time,
+		updatedAt time.Time,
 	) error
-	GetPhotoByTgID() (*model.Photo, error)
+	GetPhotoByFileID(fileID string) (*model.Photo, error)
 }

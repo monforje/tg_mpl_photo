@@ -20,11 +20,16 @@ func NewPhotoRepoImpl(pool *pgxpool.Pool) *PhotoRepoImpl {
 
 func (p *PhotoRepoImpl) CreatePhoto(
 	id uuid.UUID,
+	userID int64,
+	fileID string,
+	uniqueID string,
+	fileURL string,
+	updatedAt time.Time,
 	createdAt time.Time,
 ) error {
 	return nil
 }
 
-func (p *PhotoRepoImpl) GetPhotoByTgID() (*model.Photo, error) {
+func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
 	return nil, nil
 }

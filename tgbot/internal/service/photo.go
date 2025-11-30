@@ -26,7 +26,15 @@ func (p *PhotoService) UploadPhoto(
 	id := uuid.New()
 	timeNow := time.Now()
 
-	if err := p.photoRepo.CreatePhoto(id, timeNow); err != nil {
+	if err := p.photoRepo.CreatePhoto(
+		id,
+		userID,
+		fileID,
+		uniqueID,
+		fileURL,
+		timeNow,
+		timeNow,
+	); err != nil {
 		return err
 	}
 	return nil
