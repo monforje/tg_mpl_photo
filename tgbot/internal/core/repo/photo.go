@@ -1,12 +1,16 @@
 package repo
 
+import (
+	"tgbot/internal/core/model"
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type PhotoRepo interface {
-	UploadRawPhoto(
-	/*
-	 */
-	)
-	UploadPhoto(
-	/*
-	 */
-	)
+	CreatePhoto(
+		id uuid.UUID,
+		createdAt time.Time,
+	) error
+	GetPhotoByTgID() (*model.Photo, error)
 }

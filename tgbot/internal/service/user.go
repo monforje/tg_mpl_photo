@@ -7,17 +7,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type RegService struct {
+type UserService struct {
 	userRepo repo.UserRepo
 }
 
-func NewRegService(userRepo repo.UserRepo) *RegService {
-	return &RegService{
+func NewUserService(userRepo repo.UserRepo) *UserService {
+	return &UserService{
 		userRepo: userRepo,
 	}
 }
 
-func (r *RegService) Reg(
+func (r *UserService) Reg(
 	tgID int64,
 	username string,
 ) error {

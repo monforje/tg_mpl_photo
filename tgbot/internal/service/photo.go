@@ -1,43 +1,33 @@
 package service
 
-type PhotoService struct{}
+import (
+	"tgbot/internal/core/repo"
+	"time"
 
-func NewPhotoService() *PhotoService {
-	return &PhotoService{}
+	"github.com/google/uuid"
+)
+
+type PhotoService struct {
+	photoRepo repo.PhotoRepo
 }
 
-func (p *PhotoService) UploadRawPhoto(
-/*
- */
-) {
-	/*
-		загружает фото из телеграмма
-		то бишь
-		генерирует uuid id
-		tg id
-		file id
-		file unique id
-		размеры
-		формат
-		делать url по которому можно скачать
-		пишет description null пока
-		пишет created at
-		и upload date
-
-		потом она формирует json из этой информации
-		и отправляет в kafka топик raw_photo_topic
-		всё
-	*/
+func NewPhotoService(photoRepo repo.PhotoRepo) *PhotoService {
+	return &PhotoService{
+		photoRepo: photoRepo,
+	}
 }
 
 func (p *PhotoService) UploadPhoto(
-/*
- */
-) {
-	/*
-		читает кафка топик result_photo_topic
-		парсит json
-		дописывает updated at
-		и записывает в бд
-	*/
+	userID int64,
+	fileID string,
+	uniqueID string,
+	fileURL string,
+) error {
+	id := uuid.New()
+	timeNow := time.Now()
+
+	if err := p.photoRepo.CreatePhoto(id, timeNow); err != nil {
+		return err
+	}
+	return nil
 }

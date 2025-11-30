@@ -12,3 +12,8 @@ var (
 var (
 	ErrAlreadyRegistered = errors.New("user is already registered")
 )
+
+// photo.go
+var (
+	ErrPhotoDuplicate = errors.New("photo is duplicate")
+)

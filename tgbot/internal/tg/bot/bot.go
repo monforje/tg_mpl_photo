@@ -25,16 +25,19 @@ func New(token string, pool *pgxpool.Pool) (*Bot, error) {
 		return nil, err
 	}
 
+	// user
 	userRepo := repoimpl.NewUserRepoImpl(pool)
-	regService := service.NewRegService(userRepo)
-	regHandler := handler.NewRegHandler(regService)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
-	photoService := service.NewPhotoService()
+	// photo
+	photoRepo := repoimpl.NewPhotoRepoImpl(pool)
+	photoService := service.NewPhotoService(photoRepo)
 	photoHandler := handler.NewPhotoHandler(photoService)
 
 	router.New(
 		b,
-		regHandler,
+		userHandler,
 		photoHandler,
 	)
 

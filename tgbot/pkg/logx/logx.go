@@ -28,3 +28,7 @@ func Fatal(msg string, args ...any) {
 	logger.Error(msg, args...)
 	os.Exit(1)
 }
+
+func Warn(msg string, args ...any) {
+	logger.Warn(msg, args...)
+}

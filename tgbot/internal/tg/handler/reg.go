@@ -10,30 +10,31 @@ import (
 	tele "gopkg.in/telebot.v4"
 )
 
-type RegHandler struct {
-	regService *service.RegService
+type UserHandler struct {
+	userService *service.UserService
 }
 
-func NewRegHandler(regService *service.RegService) *RegHandler {
-	return &RegHandler{
-		regService: regService,
+func NewUserHandler(userService *service.UserService) *UserHandler {
+	return &UserHandler{
+		userService: userService,
 	}
 }
 
-func (r *RegHandler) HandleReg(c tele.Context) error {
+func (h *UserHandler) HandleReg(c tele.Context) error {
 	tgID := c.Sender().ID
 	username := c.Sender().Username
 
-	if err := r.regService.Reg(tgID, username); err != nil {
-		if err == errorx.ErrAlreadyRegistered {
-			logx.Error(
-				"user already registered",
-				"username", username,
-				"tg_id", tgID,
-			)
-			sticker.SendSticker(c, sticker.StickerRegSuccess)
-			return c.Send(message.MsgRegAlready)
-		}
+	err := h.userService.Reg(tgID, username)
+	if err == errorx.ErrAlreadyRegistered {
+		logx.Warn(
+			"user already registered",
+			"username", username,
+			"tg_id", tgID,
+		)
+		sticker.SendSticker(c, sticker.StickerRegSuccess)
+		return c.Send(message.MsgRegAlready)
+	}
+	if err != nil {
 		logx.Error(
 			"registration failed",
 			"error", err,
