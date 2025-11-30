@@ -61,7 +61,10 @@ func (p *PhotoProducer) Produce(ctx context.Context, event *event.PhotoUploadEve
 
 	select {
 	case err := <-resultChan:
-		return fmt.Errorf("photo upload event produce failed: %w", err)
+		if err != nil {
+			return fmt.Errorf("photo upload event produce failed: %w", err)
+		}
+		return nil
 	case <-ctx.Done():
 		return fmt.Errorf("photo upload event produce context done: %w", ctx.Err())
 	}
