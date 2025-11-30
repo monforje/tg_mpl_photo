@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context" // ✅ Добавили
 	"tgbot/internal/core/model"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 
 type PhotoRepo interface {
 	CreatePhoto(
+		ctx context.Context,
 		id uuid.UUID,
 		userID uuid.UUID,
 		fileID string,
@@ -17,5 +19,5 @@ type PhotoRepo interface {
 		createdAt time.Time,
 		updatedAt time.Time,
 	) error
-	GetPhotoByFileID(fileID string) (*model.Photo, error)
+	GetPhotoByFileID(ctx context.Context, fileID string) (*model.Photo, error)
 }

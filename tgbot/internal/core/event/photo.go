@@ -1,6 +1,8 @@
 package event
 
 import (
+	"context"
+	"tgbot/pkg/errorx"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,6 +17,28 @@ type PhotoUploadEvent struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type PhotoUploadEventProducer interface {
-	Produce(event *PhotoUploadEvent) error
+func (e *PhotoUploadEvent) Validate() error {
+	if e.ID == uuid.Nil {
+		return errorx.ErrPhotoRequired
+	}
+	if e.UserID == uuid.Nil {
+		return errorx.ErrUserRequired
+	}
+	if e.FileID == "" {
+		return errorx.ErrFileIDRequired
+	}
+	if e.UniqueID == "" {
+		return errorx.ErrUniqueIDRequired
+	}
+	if e.FileURL == "" {
+		return errorx.ErrFileURLRequired
+	}
+	if e.CreatedAt.IsZero() {
+		return errorx.ErrCreatedAtRequired
+	}
+	return nil
+}
+
+type PhotoProducer interface {
+	Produce(ctx context.Context, event *PhotoUploadEvent) error
 }

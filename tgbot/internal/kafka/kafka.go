@@ -3,6 +3,7 @@ package kafka
 import (
 	"tgbot/pkg/config"
 	"tgbot/pkg/logx"
+	"time"
 
 	"github.com/IBM/sarama"
 )
@@ -14,11 +15,19 @@ type Kafka struct {
 
 func New(cfg *config.KafkaConfig) (*Kafka, error) {
 	saramaConfig := sarama.NewConfig()
+
 	saramaConfig.Producer.Return.Successes = true
 	saramaConfig.Producer.Return.Errors = true
 	saramaConfig.Producer.Retry.Max = cfg.Producer.Retry.Max
 	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	saramaConfig.Producer.Compression = sarama.CompressionSnappy
+
+	saramaConfig.Producer.Timeout = cfg.Producer.Timeout
+	saramaConfig.Producer.Retry.Backoff = cfg.Producer.Retry.Backoff
+
+	saramaConfig.Producer.Idempotent = true
+	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
+	saramaConfig.Net.MaxOpenRequests = 1
 
 	producer, err := sarama.NewSyncProducer(cfg.Brokers, saramaConfig)
 	if err != nil {
@@ -42,9 +51,12 @@ func (k *Kafka) Config() *config.KafkaConfig {
 }
 
 func (k *Kafka) Stop() error {
+	time.Sleep(100 * time.Millisecond)
+
 	if err := k.producer.Close(); err != nil {
 		return err
 	}
-	logx.Info("kafka producer closed")
+
+	logx.Info("kafka producer closed successfully")
 	return nil
 }

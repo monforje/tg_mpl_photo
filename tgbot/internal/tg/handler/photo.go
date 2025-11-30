@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"tgbot/internal/service"
 	"tgbot/pkg/errorx"
@@ -28,11 +29,14 @@ func NewPhotoHandler(
 }
 
 func (p *PhotoHandler) HandleUpload(c tele.Context) error {
+	ctx := context.Background()
+
 	userID := c.Sender().ID
 	username := c.Sender().Username
 	photo := c.Message().Photo
 
 	err := p.photoService.UploadPhoto(
+		ctx,
 		userID,
 		photo.FileID,
 		photo.UniqueID,

@@ -23,6 +23,7 @@ func NewPhotoRepoImpl(pool *pgxpool.Pool) *PhotoRepoImpl {
 }
 
 func (p *PhotoRepoImpl) CreatePhoto(
+	ctx context.Context,
 	id uuid.UUID,
 	userID uuid.UUID,
 	fileID string,
@@ -31,24 +32,20 @@ func (p *PhotoRepoImpl) CreatePhoto(
 	createdAt time.Time,
 	updatedAt time.Time,
 ) error {
-	existingPhoto, err := p.GetPhotoByFileID(fileID)
-	if err != nil {
-		if !errors.Is(err, pgx.ErrNoRows) {
-			return err
-		}
-	}
-	if existingPhoto != nil {
-		return errorx.ErrPhotoDuplicate
-	}
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
 	query := `
         INSERT INTO photos (
             id, user_id, file_id, unique_id, file_url, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ON CONFLICT (file_id) DO NOTHING
+        RETURNING id
     `
 
-	_, err = p.pool.Exec(
-		context.Background(),
+	var insertedID uuid.UUID
+	err := p.pool.QueryRow(
+		ctx,
 		query,
 		id,
 		userID,
@@ -57,12 +54,22 @@ func (p *PhotoRepoImpl) CreatePhoto(
 		fileURL,
 		createdAt,
 		updatedAt,
-	)
+	).Scan(&insertedID)
 
-	return err
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return errorx.ErrPhotoDuplicate
+		}
+		return err
+	}
+
+	return nil
 }
 
-func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
+func (p *PhotoRepoImpl) GetPhotoByFileID(ctx context.Context, fileID string) (*model.Photo, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	query := `
         SELECT 
             id, user_id, file_id, unique_id, file_url, created_at, updated_at
@@ -71,8 +78,7 @@ func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
     `
 
 	var photo model.Photo
-
-	err := p.pool.QueryRow(context.Background(), query, fileID).Scan(
+	err := p.pool.QueryRow(ctx, query, fileID).Scan(
 		&photo.ID,
 		&photo.UserID,
 		&photo.FileID,
@@ -81,7 +87,11 @@ func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
 		&photo.CreatedAt,
 		&photo.UpdatedAt,
 	)
+
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errorx.ErrPhotoNotFound
+		}
 		return nil, err
 	}
 

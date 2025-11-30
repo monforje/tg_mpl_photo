@@ -41,7 +41,7 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	photoProducer := producer.NewPhotoUploadEventProducer(k)
+	photoProducer := producer.NewPhotoProducer(k)
 
 	userRepo := repoimpl.NewUserRepoImpl(db.Pool)
 	userService := service.NewUserService(userRepo)

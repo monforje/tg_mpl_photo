@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"tgbot/internal/service"
 	"tgbot/pkg/errorx"
@@ -22,10 +23,16 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) HandleReg(c tele.Context) error {
+	ctx := context.Background()
+
 	tgID := c.Sender().ID
 	username := c.Sender().Username
 
-	err := h.userService.Reg(tgID, username)
+	err := h.userService.Reg(
+		ctx,
+		tgID,
+		username,
+	)
 
 	if errors.Is(err, errorx.ErrAlreadyRegistered) {
 		logx.Warn(

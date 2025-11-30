@@ -23,41 +23,57 @@ func NewUserRepoImpl(pool *pgxpool.Pool) *UserRepoImpl {
 }
 
 func (u *UserRepoImpl) CreateUser(
+	ctx context.Context,
 	id uuid.UUID,
 	tgID int64,
 	username string,
 	createdAt time.Time,
 ) error {
-	existingUser, err := u.GetUserByTgID(tgID)
-	if err != nil {
-		if !errors.Is(err, errorx.ErrUserNotFound) {
-			return err
-		}
-	}
-	if existingUser != nil {
-		return errorx.ErrAlreadyRegistered
-	}
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	query := `INSERT INTO users (id, tg_id, username, created_at) VALUES ($1, $2, $3, $4)`
-	_, err = u.pool.Exec(context.Background(), query, id, tgID, username, createdAt)
+	query := `
+        INSERT INTO users (id, tg_id, username, created_at) 
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (tg_id) DO NOTHING
+        RETURNING id
+    `
+
+	var insertedID uuid.UUID
+	err := u.pool.QueryRow(
+		ctx,
+		query,
+		id,
+		tgID,
+		username,
+		createdAt,
+	).Scan(&insertedID)
+
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return errorx.ErrAlreadyRegistered
+		}
 		return err
 	}
 
 	return nil
 }
 
-func (u *UserRepoImpl) GetUserByTgID(tgID int64) (*model.User, error) {
+func (u *UserRepoImpl) GetUserByTgID(ctx context.Context, tgID int64) (*model.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	query := `SELECT id, tg_id, username, created_at FROM users WHERE tg_id = $1`
 
 	var user model.User
 
-	err := u.pool.QueryRow(context.Background(), query, tgID).Scan(
+	err := u.pool.QueryRow(ctx, query, tgID).Scan(
 		&user.ID,
 		&user.TgID,
 		&user.Username,
 		&user.CreatedAt,
 	)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errorx.ErrUserNotFound
