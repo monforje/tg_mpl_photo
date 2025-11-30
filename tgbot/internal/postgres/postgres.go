@@ -12,8 +12,6 @@ type Postgres struct {
 }
 
 func New(ctx context.Context, dsn string) (*Postgres, error) {
-	logx.Info("connecting to postgres")
-
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, err
