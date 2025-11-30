@@ -34,7 +34,10 @@ func New(ctx context.Context) (*App, error) {
 
 	// photo
 	photoRepo := repoimpl.NewPhotoRepoImpl(db.Pool)
-	photoService := service.NewPhotoService(photoRepo)
+	photoService := service.NewPhotoService(
+		photoRepo,
+		userRepo,
+	)
 	photoHandler := handler.NewPhotoHandler(
 		photoService,
 		e.TgToken,

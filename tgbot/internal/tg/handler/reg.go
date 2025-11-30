@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"tgbot/internal/service"
 	"tgbot/pkg/errorx"
 	"tgbot/pkg/logx"
@@ -25,7 +26,8 @@ func (h *UserHandler) HandleReg(c tele.Context) error {
 	username := c.Sender().Username
 
 	err := h.userService.Reg(tgID, username)
-	if err == errorx.ErrAlreadyRegistered {
+
+	if errors.Is(err, errorx.ErrAlreadyRegistered) {
 		logx.Warn(
 			"user already registered",
 			"username", username,
@@ -34,6 +36,7 @@ func (h *UserHandler) HandleReg(c tele.Context) error {
 		sticker.SendSticker(c, sticker.StickerRegSuccess)
 		return c.Send(message.MsgRegAlready)
 	}
+
 	if err != nil {
 		logx.Error(
 			"registration failed",

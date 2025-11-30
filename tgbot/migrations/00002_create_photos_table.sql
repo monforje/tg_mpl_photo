@@ -3,16 +3,16 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS photos (
     id UUID PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    file_id VARCHAR(255) NOT NULL UNIQUE, -- добавил UNIQUE
-    unique_id VARCHAR(255) NOT NULL UNIQUE, -- добавил UNIQUE
+    user_id UUID NOT NULL, -- изменил на UUID
+    file_id VARCHAR(255) NOT NULL UNIQUE,
+    unique_id VARCHAR(255) NOT NULL UNIQUE,
     file_url TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
     CONSTRAINT fk_photos_user
         FOREIGN KEY (user_id)
-        REFERENCES users(tg_id)
+        REFERENCES users(id) -- теперь ссылается на users.id
         ON DELETE CASCADE
 );
 

@@ -11,5 +11,6 @@ var (
 var (
 	MsgPhotoUploadSuccess = "Photo uploaded successfully!"
 	MsgPhotoUploadFail    = "Photo upload failed. Please try again."
+	MsgUserNotFound       = "User not found. Please use /start first."
 	MsgPhotoDuplicate     = "This photo has already been uploaded."
 )

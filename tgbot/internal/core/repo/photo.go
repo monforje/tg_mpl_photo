@@ -10,7 +10,7 @@ import (
 type PhotoRepo interface {
 	CreatePhoto(
 		id uuid.UUID,
-		userID int64,
+		userID uuid.UUID,
 		fileID string,
 		uniqueID string,
 		fileURL string,

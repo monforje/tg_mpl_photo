@@ -24,7 +24,12 @@ func (r *UserService) Reg(
 	id := uuid.New()
 	timeNow := time.Now()
 
-	if err := r.userRepo.CreateUser(id, tgID, username, timeNow); err != nil {
+	if err := r.userRepo.CreateUser(
+		id,
+		tgID,
+		username,
+		timeNow,
+	); err != nil {
 		return err
 	}
 

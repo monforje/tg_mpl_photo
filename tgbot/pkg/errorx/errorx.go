@@ -11,6 +11,7 @@ var (
 // reg.go
 var (
 	ErrAlreadyRegistered = errors.New("user is already registered")
+	ErrUserNotFound      = errors.New("user not found")
 )
 
 // photo.go

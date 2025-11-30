@@ -24,14 +24,13 @@ func NewPhotoRepoImpl(pool *pgxpool.Pool) *PhotoRepoImpl {
 
 func (p *PhotoRepoImpl) CreatePhoto(
 	id uuid.UUID,
-	userID int64,
+	userID uuid.UUID,
 	fileID string,
 	uniqueID string,
 	fileURL string,
 	createdAt time.Time,
 	updatedAt time.Time,
 ) error {
-
 	existingPhoto, err := p.GetPhotoByFileID(fileID)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -83,7 +82,6 @@ func (p *PhotoRepoImpl) GetPhotoByFileID(fileID string) (*model.Photo, error) {
 		&photo.CreatedAt,
 		&photo.UpdatedAt,
 	)
-
 	if err != nil {
 		return nil, err
 	}

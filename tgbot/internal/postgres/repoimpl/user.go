@@ -30,7 +30,7 @@ func (u *UserRepoImpl) CreateUser(
 ) error {
 	existingUser, err := u.GetUserByTgID(tgID)
 	if err != nil {
-		if !errors.Is(err, pgx.ErrNoRows) {
+		if !errors.Is(err, errorx.ErrUserNotFound) {
 			return err
 		}
 	}
@@ -51,6 +51,7 @@ func (u *UserRepoImpl) GetUserByTgID(tgID int64) (*model.User, error) {
 	query := `SELECT id, tg_id, username, created_at FROM users WHERE tg_id = $1`
 
 	var user model.User
+
 	err := u.pool.QueryRow(context.Background(), query, tgID).Scan(
 		&user.ID,
 		&user.TgID,
@@ -58,6 +59,9 @@ func (u *UserRepoImpl) GetUserByTgID(tgID int64) (*model.User, error) {
 		&user.CreatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errorx.ErrUserNotFound
+		}
 		return nil, err
 	}
 

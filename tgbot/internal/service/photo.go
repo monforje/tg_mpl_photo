@@ -9,26 +9,36 @@ import (
 
 type PhotoService struct {
 	photoRepo repo.PhotoRepo
+	userRepo  repo.UserRepo
 }
 
-func NewPhotoService(photoRepo repo.PhotoRepo) *PhotoService {
+func NewPhotoService(
+	photoRepo repo.PhotoRepo,
+	userRepo repo.UserRepo,
+) *PhotoService {
 	return &PhotoService{
 		photoRepo: photoRepo,
+		userRepo:  userRepo,
 	}
 }
 
 func (p *PhotoService) UploadPhoto(
-	userID int64,
+	tgID int64,
 	fileID string,
 	uniqueID string,
 	fileURL string,
 ) error {
+	user, err := p.userRepo.GetUserByTgID(tgID)
+	if err != nil {
+		return err
+	}
+
 	id := uuid.New()
 	timeNow := time.Now()
 
 	if err := p.photoRepo.CreatePhoto(
 		id,
-		userID,
+		user.ID,
 		fileID,
 		uniqueID,
 		fileURL,

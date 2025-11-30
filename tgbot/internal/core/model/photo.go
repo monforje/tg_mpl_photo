@@ -8,7 +8,7 @@ import (
 
 type Photo struct {
 	ID        uuid.UUID `db:"id"`
-	UserID    int64     `db:"user_id"`
+	UserID    uuid.UUID `db:"user_id"`
 	FileID    string    `db:"file_id"`
 	UniqueID  string    `db:"unique_id"`
 	FileURL   string    `db:"file_url"`

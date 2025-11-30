@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"tgbot/internal/service"
 	"tgbot/pkg/errorx"
 	"tgbot/pkg/logx"
@@ -20,7 +21,6 @@ func NewPhotoHandler(
 	photoService *service.PhotoService,
 	token string,
 ) *PhotoHandler {
-
 	return &PhotoHandler{
 		photoService: photoService,
 		token:        token,
@@ -30,8 +30,8 @@ func NewPhotoHandler(
 func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 	userID := c.Sender().ID
 	username := c.Sender().Username
-
 	photo := c.Message().Photo
+
 	if _, err := c.Bot().File(&photo.File); err != nil {
 		logx.Error(
 			"photo upload failed",
@@ -42,13 +42,26 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		)
 		return c.Send(message.MsgPhotoUploadFail)
 	}
+
 	err := p.photoService.UploadPhoto(
 		userID,
 		photo.FileID,
 		photo.UniqueID,
 		fileurl.GetTgFileURL(p.token, photo.FilePath),
 	)
-	if err == errorx.ErrPhotoDuplicate {
+
+	if errors.Is(err, errorx.ErrUserNotFound) {
+		logx.Error(
+			"user not found",
+			"error", err,
+			"username", username,
+			"tg_id", userID,
+		)
+		sticker.SendSticker(c, sticker.StickerPhotoUploadFail)
+		return c.Send(message.MsgUserNotFound)
+	}
+
+	if errors.Is(err, errorx.ErrPhotoDuplicate) {
 		logx.Warn(
 			"photo already uploaded",
 			"username", username,
@@ -58,6 +71,7 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 		return c.Send(message.MsgPhotoDuplicate)
 	}
+
 	if err != nil {
 		logx.Error(
 			"photo upload failed",

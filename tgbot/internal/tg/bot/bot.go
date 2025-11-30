@@ -17,11 +17,11 @@ func New(
 	userHandler *handler.UserHandler,
 	photoHandler *handler.PhotoHandler,
 ) (*Bot, error) {
-
 	pref := tele.Settings{
 		Token:  token,
 		Poller: &tele.LongPoller{Timeout: 10},
 	}
+
 	b, err := tele.NewBot(pref)
 	if err != nil {
 		return nil, err
