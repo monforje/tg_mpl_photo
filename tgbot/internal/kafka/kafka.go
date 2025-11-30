@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"tgbot/internal/config"
+	"tgbot/pkg/config"
 	"tgbot/pkg/logx"
 
 	"github.com/IBM/sarama"

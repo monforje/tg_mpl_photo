@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"tgbot/internal/config"
 	"tgbot/internal/env"
 	"tgbot/internal/kafka"
 	"tgbot/internal/kafka/producer"
@@ -11,6 +10,7 @@ import (
 	"tgbot/internal/service"
 	"tgbot/internal/tg/bot"
 	"tgbot/internal/tg/handler"
+	"tgbot/pkg/config"
 	"tgbot/pkg/logx"
 )
 
