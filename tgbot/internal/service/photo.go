@@ -1,6 +1,7 @@
 package service
 
 import (
+	"tgbot/internal/core/event"
 	"tgbot/internal/core/repo"
 	"time"
 
@@ -8,17 +9,20 @@ import (
 )
 
 type PhotoService struct {
-	photoRepo repo.PhotoRepo
-	userRepo  repo.UserRepo
+	photoRepo     repo.PhotoRepo
+	userRepo      repo.UserRepo
+	photoProducer event.PhotoUploadEventProducer
 }
 
 func NewPhotoService(
 	photoRepo repo.PhotoRepo,
 	userRepo repo.UserRepo,
+	photoProducer event.PhotoUploadEventProducer,
 ) *PhotoService {
 	return &PhotoService{
-		photoRepo: photoRepo,
-		userRepo:  userRepo,
+		photoRepo:     photoRepo,
+		userRepo:      userRepo,
+		photoProducer: photoProducer,
 	}
 }
 
@@ -47,5 +51,10 @@ func (p *PhotoService) UploadPhoto(
 	); err != nil {
 		return err
 	}
+
+	// create event
+
+	// produce event
+
 	return nil
 }

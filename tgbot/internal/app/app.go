@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"tgbot/internal/env"
+	"tgbot/internal/kafka/producer"
 	"tgbot/internal/postgres"
 	"tgbot/internal/postgres/repoimpl"
 	"tgbot/internal/service"
@@ -27,6 +28,9 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
+	// kafka
+	photoProducer := producer.NewPhotoUploadEventProducer()
+
 	// user
 	userRepo := repoimpl.NewUserRepoImpl(db.Pool)
 	userService := service.NewUserService(userRepo)
@@ -37,6 +41,7 @@ func New(ctx context.Context) (*App, error) {
 	photoService := service.NewPhotoService(
 		photoRepo,
 		userRepo,
+		photoProducer,
 	)
 	photoHandler := handler.NewPhotoHandler(
 		photoService,
