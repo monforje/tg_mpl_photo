@@ -26,6 +26,13 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 
 	photo := c.Message().Photo
 	if _, err := c.Bot().File(&photo.File); err != nil {
+		logx.Error(
+			"photo upload failed",
+			"error", err,
+			"username", username,
+			"tg_id", userID,
+			"unique_id", photo.UniqueID,
+		)
 		return c.Send(message.MsgPhotoUploadFail)
 	}
 
@@ -41,7 +48,7 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 			"photo already uploaded",
 			"username", username,
 			"tg_id", userID,
-			"file_id", photo.FileID,
+			"unique_id", photo.UniqueID,
 		)
 		sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 		return c.Send(message.MsgPhotoDuplicate)
@@ -53,7 +60,7 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 			"error", err,
 			"username", username,
 			"tg_id", userID,
-			"file_id", photo.FileID,
+			"unique_id", photo.UniqueID,
 		)
 		sticker.SendSticker(c, sticker.StickerPhotoUploadFail)
 		return c.Send(message.MsgPhotoUploadFail)
@@ -63,7 +70,7 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		"photo uploaded successfully",
 		"username", username,
 		"tg_id", userID,
-		"file_id", photo.FileID,
+		"unique_id", photo.UniqueID,
 	)
 	sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 	return c.Send(message.MsgPhotoUploadSuccess)

@@ -1,13 +1,10 @@
 package bot
 
 import (
-	"tgbot/internal/postgres/repoimpl"
-	"tgbot/internal/service"
 	"tgbot/internal/tg/handler"
 	"tgbot/internal/tg/router"
 	"tgbot/pkg/logx"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	tele "gopkg.in/telebot.v4"
 )
 
@@ -15,7 +12,12 @@ type Bot struct {
 	b *tele.Bot
 }
 
-func New(token string, pool *pgxpool.Pool) (*Bot, error) {
+func New(
+	token string,
+	userHandler *handler.UserHandler,
+	photoHandler *handler.PhotoHandler,
+) (*Bot, error) {
+
 	pref := tele.Settings{
 		Token:  token,
 		Poller: &tele.LongPoller{Timeout: 10},
@@ -24,16 +26,6 @@ func New(token string, pool *pgxpool.Pool) (*Bot, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// user
-	userRepo := repoimpl.NewUserRepoImpl(pool)
-	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
-
-	// photo
-	photoRepo := repoimpl.NewPhotoRepoImpl(pool)
-	photoService := service.NewPhotoService(photoRepo)
-	photoHandler := handler.NewPhotoHandler(photoService)
 
 	router.New(
 		b,

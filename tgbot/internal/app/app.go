@@ -4,7 +4,10 @@ import (
 	"context"
 	"tgbot/internal/env"
 	"tgbot/internal/postgres"
+	"tgbot/internal/postgres/repoimpl"
+	"tgbot/internal/service"
 	"tgbot/internal/tg/bot"
+	"tgbot/internal/tg/handler"
 	"tgbot/pkg/logx"
 )
 
@@ -24,7 +27,21 @@ func New(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	b, err := bot.New(e.TgToken, db.Pool)
+	// user
+	userRepo := repoimpl.NewUserRepoImpl(db.Pool)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
+	// photo
+	photoRepo := repoimpl.NewPhotoRepoImpl(db.Pool)
+	photoService := service.NewPhotoService(photoRepo)
+	photoHandler := handler.NewPhotoHandler(photoService)
+
+	b, err := bot.New(
+		e.TgToken,
+		userHandler,
+		photoHandler,
+	)
 	if err != nil {
 		return nil, err
 	}
