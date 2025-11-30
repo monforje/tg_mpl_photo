@@ -4,6 +4,7 @@ import (
 	"tgbot/internal/service"
 	"tgbot/pkg/errorx"
 	"tgbot/pkg/logx"
+	"tgbot/pkg/tg/fileurl"
 	"tgbot/pkg/tg/message"
 	"tgbot/pkg/tg/sticker"
 
@@ -45,9 +46,8 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		userID,
 		photo.FileID,
 		photo.UniqueID,
-		getURL(p.token, photo.FilePath),
+		fileurl.GetTgFileURL(p.token, photo.FilePath),
 	)
-
 	if err == errorx.ErrPhotoDuplicate {
 		logx.Warn(
 			"photo already uploaded",
@@ -58,7 +58,6 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 		sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 		return c.Send(message.MsgPhotoDuplicate)
 	}
-
 	if err != nil {
 		logx.Error(
 			"photo upload failed",
@@ -79,8 +78,4 @@ func (p *PhotoHandler) HandleUpload(c tele.Context) error {
 	)
 	sticker.SendSticker(c, sticker.StickerPhotoUploadSuccess)
 	return c.Send(message.MsgPhotoUploadSuccess)
-}
-
-func getURL(token string, filePath string) string {
-	return "https://api.telegram.org/file/bot" + token + "/" + filePath
 }
