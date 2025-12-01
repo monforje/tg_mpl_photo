@@ -19,7 +19,7 @@ func New(cfg *config.KafkaConfig) (*Kafka, error) {
 	saramaConfig.Producer.Return.Successes = true
 	saramaConfig.Producer.Return.Errors = true
 	saramaConfig.Producer.Retry.Max = cfg.Producer.Retry.Max
-	saramaConfig.Producer.RequiredAcks = sarama.WaitForLocal
+	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	saramaConfig.Producer.Compression = sarama.CompressionSnappy
 	saramaConfig.Producer.Timeout = cfg.Producer.Timeout
 	saramaConfig.Producer.Retry.Backoff = cfg.Producer.Retry.Backoff
