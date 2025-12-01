@@ -40,5 +40,5 @@ func (e *PhotoUploadEvent) Validate() error {
 }
 
 type PhotoProducer interface {
-	Produce(ctx context.Context, event *PhotoUploadEvent) error
+	PublishPhoto(ctx context.Context, event *PhotoUploadEvent) error
 }

@@ -29,7 +29,7 @@ type RetryConfig struct {
 func New() (*Config, error) {
 	var cfg Config
 
-	if err := cleanenv.ReadConfig(".yaml", &cfg); err != nil {
+	if err := cleanenv.ReadConfig("config.yaml", &cfg); err != nil {
 		return nil, err
 	}
 

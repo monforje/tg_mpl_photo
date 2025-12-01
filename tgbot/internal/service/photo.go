@@ -4,7 +4,6 @@ import (
 	"context"
 	"tgbot/internal/core/event"
 	"tgbot/internal/core/repo"
-	"tgbot/pkg/logx"
 	"time"
 
 	"github.com/google/uuid"
@@ -65,13 +64,7 @@ func (p *PhotoService) UploadPhoto(
 		CreatedAt: timeNow,
 	}
 
-	if err := p.photoProducer.Produce(ctx, photoEvent); err != nil {
-		logx.Error(
-			"failed to produce photo upload event",
-			"error", err,
-			"photo_id", id,
-			"user_id", user.ID,
-		)
+	if err := p.photoProducer.PublishPhoto(ctx, photoEvent); err != nil {
 		return err
 	}
 
