@@ -26,10 +26,6 @@ func New(cfg *config.KafkaConfig) (*Kafka, error) {
 	saramaConfig.Producer.Timeout = cfg.Producer.Timeout
 	saramaConfig.Producer.Retry.Backoff = cfg.Producer.Retry.Backoff
 
-	saramaConfig.Producer.Idempotent = true
-	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
-	saramaConfig.Net.MaxOpenRequests = 1
-
 	producer, err := sarama.NewSyncProducer(cfg.Brokers, saramaConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create kafka producer: %w", err)
